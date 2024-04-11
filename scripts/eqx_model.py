@@ -104,7 +104,6 @@ class DataReUploadingLinear(eqx.Module):
         return out
 
 
-
 if __name__ == "__main__":
     jax.config.update("jax_enable_x64", True)
     jrng_key = jax.random.PRNGKey(0)
