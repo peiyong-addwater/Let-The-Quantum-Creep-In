@@ -194,6 +194,7 @@ def generate_2q_param_state(theta):
 
 vmap_generate_2q_param_state = jax.vmap(generate_2q_param_state, in_axes=0, out_axes = 0)
 
+# FlippedQuanv3x3 kernel
 def single_kernel_op(thetas, patch):
   # patch has shape (c_in, h, w)
   # thetas has shape (c_in, 4^2-1) for SU4 gates
@@ -211,6 +212,25 @@ vmap_single_kernel_op_through_extracted_patches = jax.vmap(single_kernel_op, in_
 # For multiple channel output
 # parameter has shape (c_out, c_in, 4**2-1) for SU4 gates
 vmap_vmap_single_kernel_op_through_extracted_patches = jax.vmap(vmap_single_kernel_op_through_extracted_patches, in_axes=(0, None), out_axes=0)
+
+# Quantum version of the linear layer
+# Realized with data reuploading and Hamiltonian embedding
+# for input dimension D
+# the quantum linear layer is a n = ceil(log4(D+1))-qubit quantum circuit
+# Both the data encoding and the parameterised cirucit are achieved via the SU(2^n) unitary
+
+def data_encode_unitary(padded_data, t):
+    original_dim = padded_data.shape[-1]
+    new_dim = jnp.sqrt(original_dim).astype(jnp.int_)
+    data = jnp.reshape(padded_data, (new_dim, new_dim))
+    generator = (data + jnp.einsum('...jk->...kj', data))/2
+    return jax.scipy.linalg.expm(1.0j*t*generator)
+
+def su_n(params, pauli_string_tensor_list):
+    paulis = jnp.asarray(pauli_string_tensor_list)
+    generator = jnp.einsum("i, ijk -> jk", params, paulis)
+    return jax.scipy.linalg.expm(1.0j*generator)
+
 
 
 if __name__ == "__main__":
