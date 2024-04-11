@@ -231,7 +231,22 @@ def su_n(params, pauli_string_tensor_list):
     generator = jnp.einsum("i, ijk -> jk", params, paulis)
     return jax.scipy.linalg.expm(1.0j*generator)
 
+def linear_layer_func(
+        padded_data,
+        params,
+        pauli_string_tensor_list,
+        observables,
+        n_qubits
+):
+    n_rep = params.shape[0]
+    state = bitstring_to_state("+" * n_qubits)
+    data_unitary = data_encode_unitary(padded_data, 1.0/n_rep)
+    for i in range(n_rep):
+        state = jnp.dot(data_unitary, state)
+        state = jnp.dot(su_n(params[i], pauli_string_tensor_list), state)
+    return vmap_measure_sv(state, observables)
 
+vmap_batch_linear_layer_func = jax.vmap(linear_layer_func, in_axes=(0, None, None, None, None), out_axes=0)
 
 if __name__ == "__main__":
     jax.config.update("jax_enable_x64", True)
@@ -240,6 +255,27 @@ if __name__ == "__main__":
 
     jrng_key = jax.random.PRNGKey(seed)
 
+    test_params = jax.random.normal(shape=[3, 4 ** 2 - 1], key=jrng_key)
+    test_data = jax.random.normal(shape=[4**2], key=jrng_key)
+    test_obs = jnp.asarray([
+        jnp.outer(bitstring_to_state('00'), bitstring_to_state('00')),
+                        jnp.outer(bitstring_to_state('01'), bitstring_to_state('01')),
+                        jnp.outer(bitstring_to_state('10'), bitstring_to_state('10')),
+                         jnp.outer(bitstring_to_state('11'), bitstring_to_state('11'))
+                            ])
+    test_pauli_string_tensor_list = generate_pauli_tensor_list(generate_nqubit_pauli_strings(2))
+    test_out = linear_layer_func(test_data, test_params, test_pauli_string_tensor_list, test_obs, 2)
+    print(test_out)
+    print(jnp.sum(test_out))
+
+    test_data2 = jax.random.normal(shape=[3, 4**2], key=jrng_key)
+    test_out2 = vmap_batch_linear_layer_func(test_data2, test_params, test_pauli_string_tensor_list, test_obs, 2)
+    print(test_out2)
+    print(jnp.sum(test_out2))
+    print(jnp.isclose(jnp.sum(test_out2), 3))
+
+
+    """
     test_params = jax.random.normal(shape=[4 ** 2 - 1], key=jrng_key)
 
     print(
@@ -297,3 +333,4 @@ if __name__ == "__main__":
     print(test_out2.shape)
     test_out_2_features = test_out2.reshape((-1, 32, 32))
     print(test_out_2_features.shape)
+    """
