@@ -162,7 +162,7 @@ def extract_patches(image, patch_size, stride, padding=None):
         jnp.ndarray: Tensor of extracted patches of shape (num_patches, in_channels, patch_size, patch_size).
     """
 
-    in_channels, height, width = image.shape
+    in_channels, height, width = image.shape[-3], image.shape[-2], image.shape[-1]
 
     pad_h, pad_w = padding if padding is not None else (0, 0)
 
