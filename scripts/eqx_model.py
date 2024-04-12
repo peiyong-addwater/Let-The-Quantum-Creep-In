@@ -103,12 +103,56 @@ class DataReUploadingLinear(eqx.Module):
         out = out + self.bias
         return out
 
+class HybridNet(eqx.Module):
+    in_channels:int
+    replacement_lvl:int
+    layers: list
+    def __init__(self, in_channels, replacement_lvl, key):
+        assert replacement_lvl in [0,1,2]
+        self.in_channels = in_channels
+        self.replacement_lvl = replacement_lvl
+        key1, key2, key3 = jax.random.split(key, 3)
+        if self.replacement_lvl == 0:
+            self.layers = [
+                eqx.nn.Conv2d(in_channels, 32, kernel_size=3, padding=0, key=key1),
+                eqx.nn.Conv2d(32, 16, kernel_size=3, padding=0, key=key2),
+                jnp.ravel,
+                eqx.nn.Linear(16 * 28 * 28, 10, key=key3),
+            ]
+        elif self.replacement_lvl == 1:
+            self.layers = [
+                FlippedQuanv3x3(in_channels, 32, stride=1, padding=(0, 0), key=key1),
+                FlippedQuanv3x3(32, 16, stride=1, padding=(0, 0), key=key2),
+                jnp.ravel,
+                eqx.nn.Linear(16 * 28 * 28, 10, key=key3),
+            ]
+        elif self.replacement_lvl == 2:
+            self.layers = [
+                FlippedQuanv3x3(in_channels, 32, stride=1, padding=(0, 0), key=key1),
+                FlippedQuanv3x3(32, 16, stride=1, padding=(0, 0), key=key2),
+                jnp.ravel,
+                DataReUploadingLinear(16 * 28 * 28, 10, n_qubits=7, n_reps=1, key=key3),
+            ]
+        else:
+            raise ValueError("replacement_lvl should be 0, 1, or 2")
+
+    def __call__(self, x:Float[Array, "-1 h w"])->Float[Array, "10"]:
+        for layer in self.layers:
+            x = layer(x)
+        return x
 
 if __name__ == "__main__":
     jax.config.update("jax_enable_x64", True)
     jrng_key = jax.random.PRNGKey(0)
     test_img = jnp.stack([jnp.arange(32*32*1, dtype=jnp.float_).reshape((32, 32))]*3*5, axis = 0).reshape((5,3,32,32))
     print(test_img.shape)
+    for rpl_lvl in [0,1,2]:
+        test_hybridmodel = HybridNet(in_channels=3, replacement_lvl=rpl_lvl, key=jrng_key)
+        print(test_hybridmodel)
+        test_out = jax.vmap(test_hybridmodel)(test_img)
+        print(test_out.shape)
+
+    """
     test_conv_module = FlippedQuanv3x3(in_channels=3, out_channels=2, stride=1, padding=(0, 0), key=jrng_key)
     print(test_conv_module)
     test_out = jax.vmap(test_conv_module)(test_img)
@@ -125,4 +169,6 @@ if __name__ == "__main__":
     print(test_simplemodel)
     test_out = jax.vmap(test_simplemodel)(test_img)
     print(test_out.shape)
+    """
+
 
