@@ -18,7 +18,7 @@ def merge_dictionaries_recursively(dict1, dict2):
     else:
       dict1[k] = v
 class Config(object):
-    def __init__(self, config_path = 'config.yaml', default_path='config_torch.yaml'):
+    def __init__(self, config_path = 'config.yaml', default_path='config_torch_default.yaml'):
         with open(config_path) as cf_file:
             cfg = yaml.safe_load(cf_file.read())
         if default_path is not None:
