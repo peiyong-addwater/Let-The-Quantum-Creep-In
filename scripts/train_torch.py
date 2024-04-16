@@ -286,7 +286,7 @@ if __name__ == '__main__':
     print(config)
 
 
-    for replacement_lvl in [0,1,2]:
+    for replacement_lvl in [1,2]:
         for dataset_name in ['MINST', 'FashionMNIST', 'CIFAR10']:
             if dataset_name == 'CIFAR10':
                 in_channels = 3
