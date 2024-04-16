@@ -258,6 +258,8 @@ if __name__ == '__main__':
     import json
     import os
 
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "3, 2, 1, 0" # for 4-GPU, https://github.com/pytorch/pytorch/issues/113245#issuecomment-1909409587, not working here
+
     curr_time = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     print(curr_time)
@@ -302,7 +304,7 @@ if __name__ == '__main__':
                 print(f"----Training with rep = {rep}----")
                 model = HybridNet(in_channels, replacement_lvl)
                 if torch.cuda.device_count() > 1:
-                    model = nn.DataParallel(model)
+                    model = nn.DataParallel(model, device_ids=list(range(torch.cuda.device_count())))
 
                 train_losses, test_losses, train_accs, test_accs = train_torch(
                     model,
