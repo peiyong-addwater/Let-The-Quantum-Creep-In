@@ -165,7 +165,7 @@ preprocess_32_classical = torchvision.transforms.Compose([
 ])
 
 DATASETS_Quant = {
-    'MINST': {
+    'MNIST': {
         'train': torchvision.datasets.MNIST(
             "MNIST",
             train=True,
@@ -210,7 +210,7 @@ DATASETS_Quant = {
 }
 
 DATASETS_classical = {
-    'MINST': {
+    'MNIST': {
         'train': torchvision.datasets.MNIST(
             "MNIST",
             train=True,
@@ -287,7 +287,7 @@ if __name__ == '__main__':
 
 
     for replacement_lvl in [1,2]:
-        for dataset_name in ['MINST', 'FashionMNIST', 'CIFAR10']:
+        for dataset_name in ['MNIST', 'FashionMNIST', 'CIFAR10']:
             if dataset_name == 'CIFAR10':
                 in_channels = 3
             else:
