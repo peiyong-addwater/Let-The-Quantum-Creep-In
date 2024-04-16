@@ -3,6 +3,19 @@ from torch import nn as nn
 import torch.nn.functional as F
 from utils_torch import *
 
+class SimpleNet(nn.Module):
+    def __init__(self, in_channels):
+        super(SimpleNet, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Conv2d(in_channels, 32, kernel_size=3),
+            nn.Conv2d(32, 16, kernel_size=3),
+            nn.Flatten(),
+            nn.Linear(16*28*28, 10)
+        )
+
+    def forward(self, x):
+        return self.layers(x)
+
 class FlippedQuanv3x3(nn.Module):
     def __init__(self, in_channels, out_channels, stride, padding):
         super(FlippedQuanv3x3, self).__init__()
