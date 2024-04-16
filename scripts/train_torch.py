@@ -264,6 +264,8 @@ if __name__ == '__main__':
 
     print(curr_time)
 
+    print(os.getcwd())
+
 
     config = Config(config_path='config.yaml').get('experiment')
     assert config['framework'] == 'torch'
