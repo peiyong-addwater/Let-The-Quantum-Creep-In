@@ -1,23 +1,28 @@
 import torch
 import functools, itertools
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# torch.cfloat won't pass the unitary check
+# but it saves a lot of memory
+# and significantly speeds up the training
+# torch.cdouble will pass the unitary check
+# but it is very slow
 COMPLEX_DTYPE = torch.cfloat #torch.cdouble
 REAL_DTYPE = torch.float
 
 ket = {
-    '0':torch.tensor([1.,0.], dtype = COMPLEX_DTYPE, device=device),
-    '1':torch.tensor([0.,1.], dtype = COMPLEX_DTYPE, device=device),
-    '+':(torch.tensor([1,0], dtype = COMPLEX_DTYPE, device=device) + torch.tensor([0,1], dtype = COMPLEX_DTYPE, device=device))/torch.sqrt(torch.tensor(2, dtype = COMPLEX_DTYPE, device=device)),
-    '-':(torch.tensor([1,0], dtype = COMPLEX_DTYPE, device=device) - torch.tensor([0,1], dtype = COMPLEX_DTYPE, device=device))/torch.sqrt(torch.tensor(2, dtype = COMPLEX_DTYPE, device=device))
+    '0':torch.tensor([1.,0.], dtype = COMPLEX_DTYPE, device=DEVICE),
+    '1':torch.tensor([0.,1.], dtype = COMPLEX_DTYPE, device=DEVICE),
+    '+': (torch.tensor([1,0], dtype = COMPLEX_DTYPE, device=DEVICE) + torch.tensor([0, 1], dtype = COMPLEX_DTYPE, device=DEVICE)) / torch.sqrt(torch.tensor(2, dtype = COMPLEX_DTYPE, device=DEVICE)),
+    '-': (torch.tensor([1,0], dtype = COMPLEX_DTYPE, device=DEVICE) - torch.tensor([0, 1], dtype = COMPLEX_DTYPE, device=DEVICE)) / torch.sqrt(torch.tensor(2, dtype = COMPLEX_DTYPE, device=DEVICE))
 }
 
 pauli = {
-    'I':torch.tensor([[1.,0.],[0.,1.]], dtype = COMPLEX_DTYPE, device=device),
-    'X':torch.tensor([[0.,1.],[1.,0.]], dtype = COMPLEX_DTYPE, device=device),
-    'Y':torch.tensor([[0., -1.j],[1.j, 0]], dtype = COMPLEX_DTYPE, device=device),
-    'Z':torch.tensor([[1.,0.],[0.,-1.]], dtype = COMPLEX_DTYPE, device=device)
+    'I':torch.tensor([[1.,0.],[0.,1.]], dtype = COMPLEX_DTYPE, device=DEVICE),
+    'X':torch.tensor([[0.,1.],[1.,0.]], dtype = COMPLEX_DTYPE, device=DEVICE),
+    'Y':torch.tensor([[0., -1.j],[1.j, 0]], dtype = COMPLEX_DTYPE, device=DEVICE),
+    'Z':torch.tensor([[1.,0.],[0.,-1.]], dtype = COMPLEX_DTYPE, device=DEVICE)
 }
 
 def tensor_product(*args):
@@ -249,7 +254,7 @@ vmap_batch_linear_layer_func = torch.vmap(linear_layer_func, in_dims=(0, None, N
 
 
 if __name__ == '__main__':
-    test_params = torch.randn((3, 4 ** 2 - 1), device=device).type(COMPLEX_DTYPE)
+    test_params = torch.randn((3, 4 ** 2 - 1), device=DEVICE).type(COMPLEX_DTYPE)
     #test_data = torch.randn(4 ** 2, device=device).type(COMPLEX_DTYPE)
     test_obs = torch.stack([torch.outer(bitstring_to_state('00'), bitstring_to_state('00')),
                             torch.outer(bitstring_to_state('01'), bitstring_to_state('01')),
@@ -258,7 +263,7 @@ if __name__ == '__main__':
     test_pauli_string_tensor_list = generate_pauli_tensor_list(generate_nqubit_pauli_strings(2))
 
     #test_out = linear_layer_func(test_data, test_params, test_pauli_string_tensor_list, test_obs, 2)
-    test_data = torch.randn((3, 4 ** 2), device=device).type(COMPLEX_DTYPE)
+    test_data = torch.randn((3, 4 ** 2), device=DEVICE).type(COMPLEX_DTYPE)
     test_out = vmap_batch_linear_layer_func(test_data, test_params, test_pauli_string_tensor_list, test_obs, 2)
     print(test_out)
     print(torch.sum(test_out))
