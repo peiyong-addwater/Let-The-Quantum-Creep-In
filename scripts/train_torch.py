@@ -136,32 +136,45 @@ def train_torch(
 
     return step_train_losses, step_test_losses, step_train_accs, step_test_accs
 
-preprocess_28 = torchvision.transforms.Compose([
+preprocess_28_quant = torchvision.transforms.Compose([
     torchvision.transforms.Pad(2),
     torchvision.transforms.ToTensor(),
     torchvision.transforms.Normalize((0.5,), (0.5,)),
     torchvision.transforms.Lambda(lambda x: x.type(COMPLEX_DTYPE))
 ])
 
-preprocess_32 = torchvision.transforms.Compose([
+preprocess_32_quant = torchvision.transforms.Compose([
     torchvision.transforms.ToTensor(),
     torchvision.transforms.Normalize((0.5,), (0.5,)),
     torchvision.transforms.Lambda(lambda x: x.type(COMPLEX_DTYPE))
 ])
 
-DATASETS = {
+preprocess_28_classical = torchvision.transforms.Compose([
+    torchvision.transforms.Pad(2),
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize((0.5,), (0.5,)),
+    #torchvision.transforms.Lambda(lambda x: x.type(COMPLEX_DTYPE))
+])
+
+preprocess_32_classical = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize((0.5,), (0.5,)),
+    #torchvision.transforms.Lambda(lambda x: x.type(COMPLEX_DTYPE))
+])
+
+DATASETS_Quant = {
     'MINST': {
         'train': torchvision.datasets.MNIST(
             "MNIST",
             train=True,
             download=True,
-            transform=preprocess_28,
+            transform=preprocess_28_quant,
         ),
         'test': torchvision.datasets.MNIST(
             "MNIST",
             train=False,
             download=True,
-            transform=preprocess_28,
+            transform=preprocess_28_quant,
         )
     },
     'FashionMNIST': {
@@ -169,13 +182,13 @@ DATASETS = {
             "FashionMNIST",
             train=True,
             download=True,
-            transform=preprocess_28,
+            transform=preprocess_28_quant,
         ),
         'test': torchvision.datasets.FashionMNIST(
             "FashionMNIST",
             train=False,
             download=True,
-            transform=preprocess_28,
+            transform=preprocess_28_quant,
         )
     },
     'CIFAR10': {
@@ -183,26 +196,137 @@ DATASETS = {
             "CIFAR10",
             train=True,
             download=True,
-            transform=preprocess_32,
+            transform=preprocess_32_quant,
         ),
         'test': torchvision.datasets.CIFAR10(
             "CIFAR10",
             train=False,
             download=True,
-            transform=preprocess_32,
+            transform=preprocess_32_quant,
+        )
+    }
+}
+
+DATASETS_classical = {
+    'MINST': {
+        'train': torchvision.datasets.MNIST(
+            "MNIST",
+            train=True,
+            download=True,
+            transform=preprocess_28_classical,
+        ),
+        'test': torchvision.datasets.MNIST(
+            "MNIST",
+            train=False,
+            download=True,
+            transform=preprocess_28_classical,
+        )
+    },
+    'FashionMNIST': {
+        'train': torchvision.datasets.FashionMNIST(
+            "FashionMNIST",
+            train=True,
+            download=True,
+            transform=preprocess_28_classical,
+        ),
+        'test': torchvision.datasets.FashionMNIST(
+            "FashionMNIST",
+            train=False,
+            download=True,
+            transform=preprocess_28_classical,
+        )
+    },
+    'CIFAR10': {
+        'train': torchvision.datasets.CIFAR10(
+            "CIFAR10",
+            train=True,
+            download=True,
+            transform=preprocess_32_classical,
+        ),
+        'test': torchvision.datasets.CIFAR10(
+            "CIFAR10",
+            train=False,
+            download=True,
+            transform=preprocess_32_classical,
         )
     }
 }
 
 if __name__ == '__main__':
+    from datetime import datetime
+    from torch_model import HybridNet
+    import json
+    import os
+
+    curr_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    print(curr_time)
+
+
     config = Config(config_path='config.yaml').get('experiment')
     assert config['framework'] == 'torch'
-    BATCH_SIZE = config['batch_size']
-    STEPS = config['steps']
-    LEARNING_RATE = config['learning_rate']
-    PRINT_EVERY_PERCENT = config['print_every_percent']
+    BATCH_SIZE = int(config['batch_size'])
+    STEPS = int(config['steps'])
+    LEARNING_RATE = float(config['learning_rate'])
+    PRINT_EVERY_PERCENT = float(config['print_every_percent'])
 
+    N_REPS = int(config['reps'])
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device {device}")
+    if torch.cuda.device_count() > 1:
+        print(f"Using {torch.cuda.device_count()} GPUs")
+    print("Training Config:")
     print(config)
+
+    # looping through datasets
+    for dataset_name in ['MINST', 'FashionMNIST', 'CIFAR10']:
+        print(f"++++Training on {dataset_name}++++")
+        if dataset_name == 'CIFAR10':
+            in_channels = 3
+        else:
+            in_channels = 1
+
+        # looping through replacement levels
+        for replacement_lvl in [0,1,2]:
+            if replacement_lvl == 0:
+                train_dataset = DATASETS_classical[dataset_name]['train']
+                test_dataset = DATASETS_classical[dataset_name]['test']
+            else:
+                train_dataset = DATASETS_Quant[dataset_name]['train']
+                test_dataset = DATASETS_Quant[dataset_name]['test']
+
+            print(f"____Training with replacement_lvl = {replacement_lvl}____")
+            # repeat training for different random seeds
+            for rep in range(N_REPS):
+                print(f"----Training with rep = {rep}----")
+                model = HybridNet(in_channels, replacement_lvl)
+                if torch.cuda.device_count() > 1:
+                    model = nn.DataParallel(model)
+
+                train_losses, test_losses, train_accs, test_accs = train_torch(
+                    model,
+                    train_dataset,
+                    test_dataset,
+                    steps=STEPS,
+                    print_every_percent=PRINT_EVERY_PERCENT,
+                    batchsize=BATCH_SIZE,
+                    lr=LEARNING_RATE,
+                    device=device
+                )
+
+                results = {
+                    'train_losses': train_losses,
+                    'test_losses': test_losses,
+                    'train_accs': train_accs,
+                    'test_accs': test_accs
+                }
+
+                with open(os.path.join('results', f"{curr_time}_{dataset_name}_{replacement_lvl}_rep_{rep}.json"), 'w') as f:
+                    json.dump(results, f, indent=4)
+
+
+
 
 
 
