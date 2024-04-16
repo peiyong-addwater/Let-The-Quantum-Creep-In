@@ -326,12 +326,7 @@ if __name__ == '__main__':
                     'test_accs': test_accs
                 }
 
-                with open(os.path.join('results', f"{curr_time}_{dataset_name}_replacement_lvl{replacement_lvl}_rep_{rep}.json"), 'w') as f:
+                with open(os.path.join('results', f"{curr_time}_{dataset_name}_replacement_lvl_{replacement_lvl}_rep_{rep}.json"), 'w') as f:
                     json.dump(results, f, indent=4)
-
-
-
-
-
 
 
