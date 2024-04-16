@@ -286,7 +286,6 @@ if __name__ == '__main__':
 
     for replacement_lvl in [0,1,2]:
         for dataset_name in ['MINST', 'FashionMNIST', 'CIFAR10']:
-            print(f"++++Training on {dataset_name}++++")
             if dataset_name == 'CIFAR10':
                 in_channels = 3
             else:
@@ -298,9 +297,10 @@ if __name__ == '__main__':
                 train_dataset = DATASETS_Quant[dataset_name]['train']
                 test_dataset = DATASETS_Quant[dataset_name]['test']
 
-            print(f"____Training with replacement_lvl = {replacement_lvl}____")
             # repeat training for different random seeds
             for rep in range(N_REPS):
+                print(f"____Training with replacement_lvl = {replacement_lvl}____")
+                print(f"++++Training on {dataset_name}++++")
                 print(f"----Training with rep = {rep}----")
                 model = HybridNet(in_channels, replacement_lvl)
                 if torch.cuda.device_count() > 1:
