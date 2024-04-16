@@ -283,16 +283,14 @@ if __name__ == '__main__':
     print("Training Config:")
     print(config)
 
-    # looping through datasets
-    for dataset_name in ['MINST', 'FashionMNIST', 'CIFAR10']:
-        print(f"++++Training on {dataset_name}++++")
-        if dataset_name == 'CIFAR10':
-            in_channels = 3
-        else:
-            in_channels = 1
 
-        # looping through replacement levels
-        for replacement_lvl in [0,1,2]:
+    for replacement_lvl in [0,1,2]:
+        for dataset_name in ['MINST', 'FashionMNIST', 'CIFAR10']:
+            print(f"++++Training on {dataset_name}++++")
+            if dataset_name == 'CIFAR10':
+                in_channels = 3
+            else:
+                in_channels = 1
             if replacement_lvl == 0:
                 train_dataset = DATASETS_classical[dataset_name]['train']
                 test_dataset = DATASETS_classical[dataset_name]['test']
