@@ -1,0 +1,6 @@
+experiment:
+  framework: torch
+  batch_size: 200
+  learning_rate: 3e-4
+  steps: 100
+  print_every_percent: 0.1
