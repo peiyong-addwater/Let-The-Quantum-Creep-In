@@ -1,2 +1,4 @@
 /.idea
 /scripts/MNIST/
+/scripts/FashionMNIST/
+/scripts/CIFAR10/

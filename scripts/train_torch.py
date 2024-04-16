@@ -4,6 +4,8 @@ from torch import nn as nn
 import torchmetrics
 import time
 import numpy as np
+import torchvision
+from utils_torch import COMPLEX_DTYPE
 
 def merge_dictionaries_recursively(dict1, dict2):
   if dict2 is None: return
@@ -134,8 +136,74 @@ def train_torch(
 
     return step_train_losses, step_test_losses, step_train_accs, step_test_accs
 
+preprocess_28 = torchvision.transforms.Compose([
+    torchvision.transforms.Pad(2),
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize((0.5,), (0.5,)),
+    torchvision.transforms.Lambda(lambda x: x.type(COMPLEX_DTYPE))
+])
+
+preprocess_32 = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize((0.5,), (0.5,)),
+    torchvision.transforms.Lambda(lambda x: x.type(COMPLEX_DTYPE))
+])
+
+DATASETS = {
+    'MINST': {
+        'train': torchvision.datasets.MNIST(
+            "MNIST",
+            train=True,
+            download=True,
+            transform=preprocess_28,
+        ),
+        'test': torchvision.datasets.MNIST(
+            "MNIST",
+            train=False,
+            download=True,
+            transform=preprocess_28,
+        )
+    },
+    'FashionMNIST': {
+        'train': torchvision.datasets.FashionMNIST(
+            "FashionMNIST",
+            train=True,
+            download=True,
+            transform=preprocess_28,
+        ),
+        'test': torchvision.datasets.FashionMNIST(
+            "FashionMNIST",
+            train=False,
+            download=True,
+            transform=preprocess_28,
+        )
+    },
+    'CIFAR10': {
+        'train': torchvision.datasets.CIFAR10(
+            "CIFAR10",
+            train=True,
+            download=True,
+            transform=preprocess_32,
+        ),
+        'test': torchvision.datasets.CIFAR10(
+            "CIFAR10",
+            train=False,
+            download=True,
+            transform=preprocess_32,
+        )
+    }
+}
 
 if __name__ == '__main__':
-    config = Config(config_path='config.yaml')
-    print(config.get())
+    config = Config(config_path='config.yaml').get('experiment')
+    assert config['framework'] == 'torch'
+    BATCH_SIZE = config['batch_size']
+    STEPS = config['steps']
+    LEARNING_RATE = config['learning_rate']
+    PRINT_EVERY_PERCENT = config['print_every_percent']
+
+    print(config)
+
+
+
 
