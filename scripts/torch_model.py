@@ -159,8 +159,9 @@ if __name__ == '__main__':
     print(dummy_x[0, 0, 16])
 
     for rpl_lvl in [0,1,2]:
-        # full replacement need at lease A100-40GB
+        # full replacement need at least A100-40GB
         test_hybridmodel = HybridNet(in_channels=1, replacement_lvl=rpl_lvl).to(DEVICE)
+        test_hybridmodel = torch.compile(test_hybridmodel)
         print(test_hybridmodel)
         if rpl_lvl == 0:
             out = test_hybridmodel(dummy_x.type(REAL_DTYPE).to(DEVICE))
