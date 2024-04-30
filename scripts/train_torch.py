@@ -110,7 +110,7 @@ def train_torch(
 
             if (batchid) % print_every_train_batch == 0:
                 print(
-                    f"Training at step={i}, batch={batchid}, train loss = {train_loss.item()}, train acc = {train_acc.item()}, time = {batch_finish - batch_start}")
+                    f"Training at step={i}, batch={batchid}, train loss = {train_loss.item():.4f}, train acc = {train_acc.item():.4f}, time = {batch_finish - batch_start:.4f} seconds")
 
         # eval
         model.eval()
@@ -126,7 +126,7 @@ def train_torch(
                 batch_finish = time.time()
                 if (batchid) % print_every_test_batch == 0:
                     print(
-                        f"Testing at step={i}, batch={batchid}, test loss = {test_loss.item()}, test acc = {test_acc.item()}, time = {batch_finish - batch_start}")
+                        f"Testing at step={i}, batch={batchid}, test loss = {test_loss.item():.4f}, test acc = {test_acc.item():.4f}, time = {batch_finish - batch_start:.4f} seconds")
 
         step_train_losses.append(np.mean(batch_train_loss))
         step_test_losses.append(np.mean(batch_test_loss))
@@ -134,7 +134,7 @@ def train_torch(
         step_test_accs.append(np.mean(batch_test_acc))
         step_finish = time.time()
         print(
-            f"Step {i} finished in {step_finish - step_start}, Train loss = {step_train_losses[-1]}, Test loss = {step_test_losses[-1]}; Train Acc = {step_train_accs[-1]}, Test Acc = {step_test_accs[-1]}")
+            f"Step {i} finished in {step_finish - step_start:.4f} seconds, Train loss = {step_train_losses[-1]:.4f}, Test loss = {step_test_losses[-1]:.4f}; Train Acc = {step_train_accs[-1]:.4f}, Test Acc = {step_test_accs[-1]:.4f}")
 
     return step_train_losses, step_test_losses, step_train_accs, step_test_accs
 
