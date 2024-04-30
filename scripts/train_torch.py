@@ -302,7 +302,7 @@ if __name__ == '__main__':
             # repeat training for different random seeds
             for rep in range(N_REPS):
                 print(f"____Training with replacement_lvl = {replacement_lvl}____")
-                print(f"++++Training on {dataset_name}++++")
+                print(f"====Training on {dataset_name}====")
                 print(f"----Training with rep = {rep}----")
                 model = HybridNet(in_channels, replacement_lvl)
                 #if torch.cuda.device_count() > 1:
