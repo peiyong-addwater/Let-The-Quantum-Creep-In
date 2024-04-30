@@ -233,9 +233,9 @@ def su_n(params, pauli_string_tensor_list):
 def linear_layer_func(padded_data, params, pauli_string_tensor_list, observables, n_qubits):
   n_rep = params.shape[0]
   state = bitstring_to_state("+"*n_qubits)
-  data_unitary = data_encode_unitary(padded_data, 1 / n_rep)
+  #data_unitary = data_encode_unitary(padded_data, 1 / n_rep)
   for i in range(n_rep):
-    #data_unitary = data_encode_unitary(padded_data, 1/n_rep)
+    data_unitary = data_encode_unitary(padded_data, 1/n_rep)
     #print(data_unitary.shape)
     #print(state.shape)
     state = torch.matmul(
