@@ -280,8 +280,8 @@ if __name__ == '__main__':
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device {device}")
-    if torch.cuda.device_count() > 1:
-        print(f"Using {torch.cuda.device_count()} GPUs")
+    #if torch.cuda.device_count() > 1:
+    #    print(f"Using {torch.cuda.device_count()} GPUs")
     print("Training Config:")
     print(config)
 
@@ -305,8 +305,8 @@ if __name__ == '__main__':
                 print(f"++++Training on {dataset_name}++++")
                 print(f"----Training with rep = {rep}----")
                 model = HybridNet(in_channels, replacement_lvl)
-                if torch.cuda.device_count() > 1:
-                    model = nn.DataParallel(model, device_ids=list(range(torch.cuda.device_count())))
+                #if torch.cuda.device_count() > 1:
+                #    model = nn.DataParallel(model, device_ids=list(range(torch.cuda.device_count())))
 
                 train_losses, test_losses, train_accs, test_accs = train_torch(
                     model,
