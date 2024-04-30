@@ -55,7 +55,7 @@ def train_torch(
         model,
         train_dataset,
         test_dataset,
-        optim = torch.optim.SGD,
+        optim = torch.optim.Adam,
         criterion = nn.CrossEntropyLoss,
         accuracy = torchmetrics.Accuracy,
         steps = 100,
@@ -80,7 +80,7 @@ def train_torch(
     print(f"Print every train batch = {print_every_train_batch}, Print every test batch = {print_every_test_batch}")
 
     model.to(device)
-    optimizer = optim(model.parameters(), lr=lr, momentum=0.9)
+    optimizer = optim(model.parameters(), lr=lr)
     loss = criterion()
     acc_func = accuracy(task="multiclass", num_classes=10).to(device)
     step_train_losses = []
@@ -286,7 +286,7 @@ if __name__ == '__main__':
     print(config)
 
 
-    for replacement_lvl in [2,1]:
+    for replacement_lvl in [0,2,1]:
         for dataset_name in ['MNIST', 'FashionMNIST', 'CIFAR10']:
             if dataset_name == 'CIFAR10':
                 in_channels = 3
