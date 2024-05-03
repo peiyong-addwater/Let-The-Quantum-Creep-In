@@ -97,14 +97,14 @@ class HybridNet(nn.Module):
             )
         elif self.replacement_lvl == 1:
             self.layers = nn.Sequential(
-                FlippedQuanv3x3(in_channels=1, out_channels=32, stride=1, padding=None), # 32->30
+                FlippedQuanv3x3(in_channels=in_channels, out_channels=32, stride=1, padding=None), # 32->30
                 FlippedQuanv3x3(in_channels=32, out_channels=16, stride=1, padding=None),  # 30->28
                 torch.nn.Flatten(),
                 nn.Linear(16 * 28 * 28, 10)
             )
         elif self.replacement_lvl == 2:
             self.layers = torch.nn.Sequential(
-                FlippedQuanv3x3(in_channels=1, out_channels=32, stride=1, padding=None),  # 32->30
+                FlippedQuanv3x3(in_channels=in_channels, out_channels=32, stride=1, padding=None),  # 32->30
                 FlippedQuanv3x3(in_channels=32, out_channels=16, stride=1, padding=None),  # 30->28
                 torch.nn.Flatten(),
                 DataReUploadingLinear(16 * 28 * 28, 10, 7, 10)

@@ -202,7 +202,7 @@ def single_kernel_op_over_batched_patches(thetas, patch):
   # thetas has shape (c_in, 4^2-1) for SU4 gates
   n_theta = thetas.shape[-2]
   n_channel = patch.shape[-3]
-  assert n_theta == n_channel, "Thetas and patch must have the same number of channels."
+  assert n_theta == n_channel, f"Thetas and patch must have the same number of channels.Got {n_theta} and {n_channel} respectively."
   states = vmap_generate_2q_param_state(thetas)
   #print("States shape", states.shape)
   patch = torch.nn.functional.pad(patch, (0, 1, 0, 1), mode='constant')
