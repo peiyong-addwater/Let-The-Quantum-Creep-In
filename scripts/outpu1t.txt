@@ -1,0 +1,49 @@
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+20240503_002653
+/home/paperspace/Desktop/Let-The-Quantum-Creep-In/scripts
+Using device cuda
+Training Config:
+{'framework': 'torch', 'batch_size': 200, 'learning_rate': '5e-4', 'steps': 50, 'print_every_percent': 0.2, 'reps': 5}
+____Training with replacement_lvl = 2____
+====Training on CIFAR10====
+----Training with rep = 0----
+Number of train batches = 250, Number of test batches = 50
+Print every train batch = 50, Print every test batch = 10
+Training at step=0, batch=0, train loss = 2.6944, train acc = 0.0850, time = 1.9191 seconds
+Training at step=0, batch=50, train loss = 2.1679, train acc = 0.2250, time = 1.4677 seconds
+Training at step=0, batch=100, train loss = 2.0533, train acc = 0.2500, time = 1.4688 seconds
+Training at step=0, batch=150, train loss = 1.9444, train acc = 0.2950, time = 1.5032 seconds
+Training at step=0, batch=200, train loss = 1.9354, train acc = 0.2850, time = 1.4699 seconds
+Testing at step=0, batch=0, test loss = 1.8466, test acc = 0.3400, time = 0.5617 seconds
+Testing at step=0, batch=10, test loss = 1.8930, test acc = 0.3300, time = 0.5255 seconds
+Testing at step=0, batch=20, test loss = 1.9428, test acc = 0.3400, time = 0.5256 seconds
+Testing at step=0, batch=30, test loss = 1.8321, test acc = 0.3450, time = 0.5251 seconds
+Testing at step=0, batch=40, test loss = 2.0417, test acc = 0.2650, time = 0.5249 seconds
+Step 0 finished in 402.2407 seconds, Train loss = 2.0448, Test loss = 1.8457; Train Acc = 0.2644, Test Acc = 0.3476
+Training at step=1, batch=0, train loss = 1.8718, train acc = 0.3450, time = 1.4698 seconds
+Training at step=1, batch=50, train loss = 1.7218, train acc = 0.3450, time = 1.4676 seconds
+Training at step=1, batch=100, train loss = 1.7913, train acc = 0.3900, time = 1.4687 seconds
+Training at step=1, batch=150, train loss = 1.8355, train acc = 0.3650, time = 1.4679 seconds
+Training at step=1, batch=200, train loss = 1.9374, train acc = 0.3250, time = 1.4659 seconds
+Testing at step=1, batch=0, test loss = 1.7523, test acc = 0.4100, time = 0.5279 seconds
+Testing at step=1, batch=10, test loss = 1.6965, test acc = 0.3900, time = 0.5321 seconds
+Testing at step=1, batch=20, test loss = 1.8006, test acc = 0.3550, time = 0.5248 seconds
+Testing at step=1, batch=30, test loss = 1.6897, test acc = 0.3850, time = 0.5250 seconds
+Testing at step=1, batch=40, test loss = 1.7418, test acc = 0.3800, time = 0.5250 seconds
+Step 1 finished in 399.1362 seconds, Train loss = 1.8055, Test loss = 1.7186; Train Acc = 0.3580, Test Acc = 0.3878
+Training at step=2, batch=0, train loss = 1.6483, train acc = 0.4050, time = 1.4718 seconds
+Training at step=2, batch=50, train loss = 1.7102, train acc = 0.3850, time = 1.4681 seconds
+Training at step=2, batch=100, train loss = 1.7886, train acc = 0.3100, time = 1.4660 seconds
+Training at step=2, batch=150, train loss = 1.7972, train acc = 0.3250, time = 1.5033 seconds
+Training at step=2, batch=200, train loss = 1.7260, train acc = 0.4000, time = 1.4733 seconds
+Testing at step=2, batch=0, test loss = 1.7034, test acc = 0.3850, time = 0.5322 seconds
+Testing at step=2, batch=10, test loss = 1.6081, test acc = 0.4450, time = 0.5300 seconds
+Testing at step=2, batch=20, test loss = 1.7689, test acc = 0.4000, time = 0.5339 seconds
+Testing at step=2, batch=30, test loss = 1.8248, test acc = 0.3550, time = 0.5310 seconds
+Testing at step=2, batch=40, test loss = 1.6253, test acc = 0.4350, time = 0.5311 seconds
+Step 2 finished in 401.5060 seconds, Train loss = 1.7390, Test loss = 1.6937; Train Acc = 0.3837, Test Acc = 0.4040
+Training at step=3, batch=0, train loss = 1.5764, train acc = 0.4650, time = 1.4685 seconds
+Training at step=3, batch=50, train loss = 1.6303, train acc = 0.4050, time = 1.4709 seconds
