@@ -1,0 +1,5 @@
+/.idea
+/scripts/MNIST/
+/scripts/FashionMNIST/
+/scripts/CIFAR10/
+/scripts/__pycache__/
